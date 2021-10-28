@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import twitterLogo from './assets/twitter-logo.svg';
 import './App.css';
 import SelectCharacter from './Components/SelectCharacter';
+import { CONTRACT_ADDRESS, transformCharacterData } from './constants';
+import blockchainGame from './utils/BlockchainGame.json';
+import { ethers } from 'ethers';
 
 // Constants
 const TWITTER_HANDLE = 'paul_can_code';
@@ -72,6 +75,30 @@ const App = () => {
   useEffect(() => {
     checkIfWalletIsConnected();
   }, []);
+
+  useEffect(() => {
+    // Function to interact with smart contract 
+    const fetchNFTMetadata = async () => {
+      console.log("Checking for Character NFT on address:", currentAccount);
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum); 
+      const signer = provider.getSigner();
+      const gameContract = new ethers.Contract(CONTRACT_ADDRESS, blockchainGame.abi, signer);
+
+      const txn = await gameContract.checkIfUserHasNFT();
+      if (txn.name) {
+        console.log("User has a character NFT");
+        setCharacterNFT(transformCharacterData(txn));
+      } else 
+        {console.log("No character NFT found");}
+    };
+
+    // Run if we have a connected wallet 
+    if (currentAccount) {
+      console.log("CurrentAccount:", currentAccount);
+      fetchNFTMetadata();
+    }
+  }, [currentAccount]);
 
   // Render Functions
   const renderContent = () => {
