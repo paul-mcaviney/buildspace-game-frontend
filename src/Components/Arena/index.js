@@ -5,11 +5,12 @@ import blockchainGame from "../../utils/BlockchainGame.json";
 import "./Arena.css";
 
 // Pass in characterNFT metadta to have a player character in the UI
-const Arena = ({ characterNFT }) => {
+const Arena = ({ characterNFT, setCharacterNFT }) => {
   // State
   const [gameContract, setGameContract] = useState(null);
   const [boss, setBoss] = useState(null);
   const [attackState, setAttackState] = useState("");
+  const [showToast, setShowToast] = useState(false);
 
 
   // Actions
@@ -22,6 +23,11 @@ const Arena = ({ characterNFT }) => {
         await attackTxn.wait();
         console.log("attackTxn:", attackTxn);
         setAttackState("hit");
+
+        setShowToast(true);
+        setTimeout(() => {
+          setShowToast(false);
+        }, 5000);
       }
     } catch (error) {
       console.error("Error attacking boss", error);
@@ -69,7 +75,6 @@ const Arena = ({ characterNFT }) => {
         return { ...prevState, hp: bossHp };
       });
 
-      // for some reason this isn't working properly
       setCharacterNFT((prevState) => {
         return { ...prevState, hp: playerHp };
       });
@@ -89,6 +94,12 @@ const Arena = ({ characterNFT }) => {
 
   return (
     <div className="arena-container">
+      {boss && (
+        <div id="toast" className="show">
+          <div id="desc">{`💥 ${boss.name} was hit for ${characterNFT.attackDamage}!`}</div>
+        </div>
+      )}
+
       {/* Boss */ }
       {boss && (
         <div className="boss-container">
@@ -106,6 +117,10 @@ const Arena = ({ characterNFT }) => {
             <button className="cta-button" onClick={runAttackAction}>
               {`💥 Attack ${boss.name}`}
             </button>
+          </div>
+          <div className="loading-indicator">
+            
+            <p>Attacking ⚔️</p>
           </div>
         </div>
       )}

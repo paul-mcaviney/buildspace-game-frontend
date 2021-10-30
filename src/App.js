@@ -6,6 +6,7 @@ import { CONTRACT_ADDRESS, transformCharacterData } from './constants';
 import blockchainGame from './utils/BlockchainGame.json';
 import { ethers } from 'ethers';
 import Arena from './Components/Arena';
+import LoadingIndicator from './Components/LoadingIndicator';
 
 // Constants
 const TWITTER_HANDLE = 'paul_can_code';
@@ -13,9 +14,10 @@ const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 
 const App = () => {
 
-  // State variable used to store user's public wallet
+  // State variables
   const [currentAccount, setCurrentAccount] = useState(null);
   const [characterNFT, setCharacterNFT] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Actions
   const checkIfWalletIsConnected = async () => {
@@ -74,6 +76,7 @@ const App = () => {
 
   // Run the function when the page loads
   useEffect(() => {
+    setIsLoading(true);
     checkIfWalletIsConnected();
   }, []);
 
@@ -90,8 +93,11 @@ const App = () => {
       if (txn.name) {
         console.log("User has a character NFT");
         setCharacterNFT(transformCharacterData(txn));
-      } else 
-        {console.log("No character NFT found");}
+      } else {
+          console.log("No character NFT found");
+      }
+      
+      setIsLoading(false);
     };
 
     // Run if we have a connected wallet 
@@ -103,6 +109,10 @@ const App = () => {
 
   // Render Functions
   const renderContent = () => {
+
+    if (isLoading) {
+      return <LoadingIndicator />;
+    }
 
    // Scenario 1
    if (!currentAccount) {
