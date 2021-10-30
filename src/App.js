@@ -5,6 +5,7 @@ import SelectCharacter from './Components/SelectCharacter';
 import { CONTRACT_ADDRESS, transformCharacterData } from './constants';
 import blockchainGame from './utils/BlockchainGame.json';
 import { ethers } from 'ethers';
+import Arena from './Components/Arena';
 
 // Constants
 const TWITTER_HANDLE = 'paul_can_code';
@@ -123,6 +124,10 @@ const App = () => {
     // Scenario 2
     } else if (currentAccount && !characterNFT) {
       return <SelectCharacter setCharacterNFT={setCharacterNFT} />
+
+      // If there is a connected wallet and character NFT head to Arena
+    } else if (currentAccount && characterNFT) {
+      return <Arena characterNFT={characterNFT} />;
     }
   };
 
